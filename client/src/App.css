@@ -1,0 +1,32 @@
+.app-wrapper {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    transition: 0.5s;
+}
+.app-wrapper-transition {
+    background-color: rgba(0, 0, 0, 0.8);
+    transition: 0.5s;
+}
+.app-lower {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: calc(50% - 50px);
+}
+.fade-in {
+    transform: translateY(50px);
+    opacity: 0;
+    transition: 0.5s;
+}
+.fade-in-backswing {
+    transform: translateY(0px);
+    opacity: 1;
+    transition: 0.5s;
+}

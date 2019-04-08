@@ -1,0 +1,43 @@
+.app-form {
+    width: 100%;
+    height: 50px;
+    max-width: 800px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+.app-form-input {
+    width: 70%;
+    margin: 0 5%;
+    height: 100%;
+    font-size: 24px;
+    border-radius: 25px;
+    border: 4px solid black;
+    padding: 0 25px;
+    background-color: rgba(0, 0, 0, 0);
+}
+.app-form-input:focus {
+    outline-width: 0;
+}
+.app-form-submit {
+    width: 20%;
+    height: 100%;
+    border: 4px solid black;
+    margin: 0;
+    font-size: 24px;
+    border-radius: 25px;
+    font-weight: 700;
+    cursor: pointer;
+    box-sizing: content-box;
+    -moz-box-sizing: content-box;
+    background-color: rgba(0, 0, 0, 0);
+}
+.app-form-submit:focus {
+    outline-width: 0;
+}
+.app-form-submit:hover {
+    border: 4px solid red;
+    background-color: red;
+    color: white;
+}

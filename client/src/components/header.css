@@ -1,0 +1,35 @@
+.header {
+    position: fixed;
+    width: 100%;
+    height: 25px;
+    top: 0;
+    left: 0;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 255, 255, 0);
+}
+.header:hover {
+    color: rgba(255, 255, 255, 1);
+}
+
+.header-item-active {
+    width: 52%;
+}
+.header-item-inactive {
+    width: 16%;
+}
+.header-item-transition {
+    width: 25%;
+}
+.header-item-active, .header-item-inactive, .header-item-transition {
+    transition: 0.5s;
+    height: 100%;
+    cursor: pointer;
+    text-align: center;
+    line-height: 25px;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 25px;
+}
