@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import './instruction.css'
+import arrow from '../assets/arrow.png';
 
 class Arrow extends Component{
     constructor(props) {
@@ -22,7 +23,7 @@ class Arrow extends Component{
 
         setTimeout(() => {
             this.setState({isPreloadAnimating: false})
-        }, 800)
+        }, 1000)
     }
     render() {
         const css = this.state.isPreloadAnimating ? 'fade-in' : 'fade-in-backswing';
@@ -32,7 +33,7 @@ class Arrow extends Component{
         };
 
         return (
-            <img src='./arrow.png' alt='arrow' style={arrowOffset} ref={this.arrowRef} className={css}/>
+            <img src={arrow} alt='arrow' style={arrowOffset} ref={this.arrowRef} className={css}/>
         )
     }
 }
@@ -93,7 +94,7 @@ class Instruction extends Component {
                 isPreloadAnimating: false,
                 arrowAnchorXShouldBe: arrowAnchorXShouldBe
             })
-        }, 100)
+        }, 500)
     }
 
     render() {

@@ -30,7 +30,7 @@ class Header extends Component {
     componentDidMount() {
         setTimeout(() => {
             this.setState({isPreloadAnimating: false})
-        }, 700)
+        }, 100)
     }
     render() {
         return (

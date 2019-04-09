@@ -80,7 +80,7 @@
 
 @media only screen and (max-width: 800px) {
     .instruction-wrapper {
-        font-size: 12px;
+        font-size: 8px;
     }
     .instruction-highlight-info-active, .instruction-highlight-info-inactive {
         width: 200px;

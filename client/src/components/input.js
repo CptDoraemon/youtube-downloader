@@ -43,7 +43,7 @@ class Input extends Component {
     componentDidMount() {
         setTimeout(() => {
             this.setState({isPreloadAnimating: false})
-        }, 500)
+        }, 100)
     }
     render() {
         const wrapperCSS = this.state.isPreloadAnimating ? 'app-form fade-in' : 'app-form fade-in-backswing';
