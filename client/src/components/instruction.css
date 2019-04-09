@@ -85,4 +85,39 @@
     .instruction-highlight-info-active, .instruction-highlight-info-inactive {
         width: 200px;
     }
+    .instruction-wrapper img {
+        width: 100%;
+        max-width: 20px;
+        margin: 5px 0 10px 0;
+    }
+    .instruction-highlight-info-active-pointer-1 {
+        bottom: calc(100% + 2px);
+        right: 30px;
+        width: 2px;
+        height: 2px;
+        border-radius: 1px;
+    }
+    .instruction-highlight-info-active-pointer-2 {
+        bottom: calc(100% + 4px);
+        right: 25px;
+        width: 4px;
+        height: 4px;
+        border-radius: 2px;
+    }
+    .instruction-highlight-info-active-pointer-3 {
+        bottom: calc(100% + 8px);
+        right: 30px;
+        width: 6px;
+        height: 6px;
+        border-radius: 3px;
+    }
+    .instruction-highlight-info-active, .instruction-highlight-info-inactive {
+        width: 300px;
+        font-weight: 500;
+        padding: 2px;
+        border-radius: 5px;
+        position: fixed;
+        bottom: 65px;
+        left: calc(50% - 150px);
+    }
 }
