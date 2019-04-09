@@ -15,10 +15,10 @@
 }
 
 .header-item-active {
-    width: 52%;
+    width: 49%;
 }
 .header-item-inactive {
-    width: 16%;
+    width: 17%;
 }
 .header-item-transition {
     width: 25%;
@@ -32,4 +32,10 @@
     font-weight: 700;
     text-transform: uppercase;
     font-size: 25px;
+    overflow: hidden;
+}
+@media only screen and (max-width: 800px) {
+    .header-item-active, .header-item-inactive, .header-item-transition {
+        font-size: 12px;
+    }
 }

@@ -5,12 +5,12 @@
     justify-content: flex-end;
     width: 100%;
     height: calc(50% - 50px);
+    overflow: hidden;
 }
 .instruction-wrapper img {
-    margin: 10px 0 20px 0;
     width: 100%;
     max-width: 100px;
-    transform: rotate(-10deg);
+    margin: 10px 0 20px 0;
 }
 .instruction-highlight {
     font-weight: 700;
@@ -76,4 +76,13 @@
     border-radius: 10px;
     transition: 0.1s;
     transition-delay: 0.3s;
+}
+
+@media only screen and (max-width: 800px) {
+    .instruction-wrapper {
+        font-size: 12px;
+    }
+    .instruction-highlight-info-active, .instruction-highlight-info-inactive {
+        width: 200px;
+    }
 }

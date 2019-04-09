@@ -11,7 +11,7 @@ class App extends Component {
         super(props);
         this.state = {
             mode: 0,
-            isSwitchingMode: false
+            isSwitchingMode: false,
         };
         this.setMode = this.setMode.bind(this);
         this.transitionFrontSwing = this.transitionFrontSwing.bind(this);
@@ -46,15 +46,20 @@ class App extends Component {
         };
         const wrapperCSS = this.state.isTransiting || this.state.isSwitchingMode? 'app-wrapper-transition app-wrapper' : 'app-wrapper';
 
+        const body = (
+            <React.Fragment>
+                <Instruction transitionFrontSwing={this.transitionFrontSwing}
+                             transitionBackSwing={this.transitionBackSwing}
+                             dataForThisMode={this.data[this.state.mode]}/>
+                <Input />
+                <div className='app-lower'> </div>
+            </React.Fragment>
+        );
+
         return (
             <div className={wrapperCSS}>
                 <Header {...headerProps} />
-
-                <Instruction transitionFrontSwing={this.transitionFrontSwing} transitionBackSwing={this.transitionBackSwing} dataForThisMode={this.data[this.state.mode]}/>
-                <Input />
-                <div className='app-lower'>
-
-                </div>
+                { this.state.isSwitchingMode ? null : body }
             </div>
         )
     }

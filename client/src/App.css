@@ -30,3 +30,12 @@
     opacity: 1;
     transition: 0.5s;
 }
+.stretch {
+    width: 0 !important;
+    opacity: 0;
+    transition: 0.5s;
+}
+.stretch-backswing {
+    opacity: 1;
+    transition: 0.5s;
+}
