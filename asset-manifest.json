@@ -1,13 +1,13 @@
 {
   "main.css": "/youtube-downloader/static/css/main.8c01b299.chunk.css",
-  "main.js": "/youtube-downloader/static/js/main.2c57b644.chunk.js",
-  "main.js.map": "/youtube-downloader/static/js/main.2c57b644.chunk.js.map",
+  "main.js": "/youtube-downloader/static/js/main.839cdc0a.chunk.js",
+  "main.js.map": "/youtube-downloader/static/js/main.839cdc0a.chunk.js.map",
   "runtime~main.js": "/youtube-downloader/static/js/runtime~main.70d9d589.js",
   "runtime~main.js.map": "/youtube-downloader/static/js/runtime~main.70d9d589.js.map",
-  "static/js/2.0f58faaa.chunk.js": "/youtube-downloader/static/js/2.0f58faaa.chunk.js",
-  "static/js/2.0f58faaa.chunk.js.map": "/youtube-downloader/static/js/2.0f58faaa.chunk.js.map",
+  "static/js/2.373ccd69.chunk.js": "/youtube-downloader/static/js/2.373ccd69.chunk.js",
+  "static/js/2.373ccd69.chunk.js.map": "/youtube-downloader/static/js/2.373ccd69.chunk.js.map",
   "index.html": "/youtube-downloader/index.html",
-  "precache-manifest.9bfe2ed4279b7c2d2a17257f04a7ba4e.js": "/youtube-downloader/precache-manifest.9bfe2ed4279b7c2d2a17257f04a7ba4e.js",
+  "precache-manifest.d8b3514f2af09b74785f11056a8a644c.js": "/youtube-downloader/precache-manifest.d8b3514f2af09b74785f11056a8a644c.js",
   "service-worker.js": "/youtube-downloader/service-worker.js",
   "static/css/main.8c01b299.chunk.css.map": "/youtube-downloader/static/css/main.8c01b299.chunk.css.map"
 }
