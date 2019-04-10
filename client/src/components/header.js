@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import './header.css';
+import { addMountAnimationToWrapper, stretchInComponent } from "../utilities/mounting-animations";
 
 function HeaderItem(props) {
     const dataObjForThisItem = props.data[props.index];
@@ -9,10 +10,10 @@ function HeaderItem(props) {
         : props.mode === props.index
             ? 'header-item-active'
             : 'header-item-inactive';
-    className += props.isPreloadAnimating ? ' stretch' : ' stretch-backswing';
+    const enhancedWrapperClassName = addMountAnimationToWrapper(className, props);
     return (
         <div
-            className={className}
+            className={enhancedWrapperClassName}
             style={{backgroundColor: dataObjForThisItem.rgb}}
             onClick={() => props.onClick(props.index)}
         >
@@ -20,22 +21,13 @@ function HeaderItem(props) {
         </div>
     )
 }
+const StretchInHeaderItem = stretchInComponent(HeaderItem, 100);
+
 class Header extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            isPreloadAnimating: true
-        }
-    }
-    componentDidMount() {
-        setTimeout(() => {
-            this.setState({isPreloadAnimating: false})
-        }, 100)
-    }
     render() {
         return (
             <div className='header'>
-                { [0, 1, 2, 3].map(index => <HeaderItem key={index} index={index} isPreloadAnimating={this.state.isPreloadAnimating} {...this.props}/>) }
+                { [0, 1, 2, 3].map(index => <StretchInHeaderItem key={index} index={index} {...this.props}/>) }
             </div>
         )
     }

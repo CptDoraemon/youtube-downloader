@@ -5,6 +5,12 @@ import { Header } from "./components/header";
 import { Instruction } from "./components/instruction";
 import { Input } from "./components/input";
 import { data } from "./data";
+import { fadeInComponent } from "./utilities/mounting-animations";
+import { withSubmissionMethods } from "./utilities/server-communication";
+
+const FadeInInstruction = fadeInComponent(Instruction, 500);
+const FadeInInput = fadeInComponent(Input, 100);
+const WithSubmissionMethodsFadeInInput = withSubmissionMethods(FadeInInput);
 
 class App extends Component {
     constructor(props) {
@@ -48,10 +54,10 @@ class App extends Component {
 
         const body = (
             <React.Fragment>
-                <Instruction transitionFrontSwing={this.transitionFrontSwing}
+                <FadeInInstruction transitionFrontSwing={this.transitionFrontSwing}
                              transitionBackSwing={this.transitionBackSwing}
                              dataForThisMode={this.data[this.state.mode]}/>
-                <Input />
+                <WithSubmissionMethodsFadeInInput requestType={this.data[this.state.mode].requestType} />
                 <div className='app-lower'> </div>
             </React.Fragment>
         );

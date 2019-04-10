@@ -1,13 +1,11 @@
 import React, { Component } from 'react';
 import './instruction.css'
 import arrow from '../assets/arrow.png';
+import { addMountAnimationToWrapper, fadeInComponent } from "../utilities/mounting-animations";
 
 class Arrow extends Component{
     constructor(props) {
         super(props);
-        this.state = {
-            isPreloadAnimating: true
-        };
         this.arrowRef = React.createRef();
         this.setArrowOffsetX = this.setArrowOffsetX.bind(this);
         this.arrowAnchorXNow = 0;
@@ -21,28 +19,26 @@ class Arrow extends Component{
         const arrowElPos = this.arrowRef.current.getBoundingClientRect();
         this.arrowAnchorXNow = arrowElPos.left + 0.8 * arrowElPos.width;
 
-        setTimeout(() => {
-            this.setState({isPreloadAnimating: false})
-        }, 1000)
     }
     render() {
-        const css = this.state.isPreloadAnimating ? 'fade-in' : 'fade-in-backswing';
+        const enhancedWrapperCSS = addMountAnimationToWrapper(null, this.props);
         const arrowOffsetX = this.props.arrowAnchorXShouldBe - this.arrowAnchorXNow;
         const arrowOffset = {
             transform: 'translateX(' + arrowOffsetX + 'px)'
         };
 
         return (
-            <img src={arrow} alt='arrow' style={arrowOffset} ref={this.arrowRef} className={css}/>
+            <img src={arrow} alt='arrow' style={arrowOffset} ref={this.arrowRef} className={enhancedWrapperCSS}/>
         )
     }
 }
+const FadeInArrow = fadeInComponent(Arrow, 1000);
+
 class Instruction extends Component {
     constructor(props) {
         super(props);
         this.state = {
             isHovering: false,
-            isPreloadAnimating: true,
             arrowAnchorXShouldBe: 0
         };
         this.handleMouseOver = this.handleMouseOver.bind(this);
@@ -89,22 +85,17 @@ class Instruction extends Component {
     componentDidMount() {
         const highLightElPos = this.highLightRef.current.getBoundingClientRect();
         const arrowAnchorXShouldBe = highLightElPos.left + 0.5 * highLightElPos.width;
-        setTimeout(() => {
-            this.setState({
-                isPreloadAnimating: false,
-                arrowAnchorXShouldBe: arrowAnchorXShouldBe
-            })
-        }, 500)
+        this.setState({arrowAnchorXShouldBe: arrowAnchorXShouldBe});
     }
 
     render() {
         const sampleUrlEl = this.appendHighLights(this.props.dataForThisMode);
-        const wrapperCSS = this.state.isPreloadAnimating ? 'instruction-wrapper fade-in' : 'instruction-wrapper fade-in-backswing';
+        const enhancedWrapperCSS = addMountAnimationToWrapper('instruction-wrapper', this.props);
 
         return (
-            <div className={wrapperCSS}>
+            <div className={enhancedWrapperCSS}>
                 { sampleUrlEl }
-                <Arrow arrowAnchorXShouldBe={this.state.arrowAnchorXShouldBe}/>
+                <FadeInArrow arrowAnchorXShouldBe={this.state.arrowAnchorXShouldBe}/>
             </div>
         )
     }

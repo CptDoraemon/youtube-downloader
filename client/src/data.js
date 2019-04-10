@@ -3,6 +3,7 @@ const data = {
         color: 'blue',
         rgb: 'rgb(72, 133, 237)',
         headerText: 'mix list',
+        requestType: 'mixList',
         instructionSampleUrl: 'https://www.youtube.com/watch?v=**lkLViPVPUaw**&list=RDlkLViPVPUaw',
         instruction: 'Youtube has a feature to generate radio-station like playlist given one video, this kind of playlist is called "mix list". Go to your favorite youtube video, gimme the video ID looks like the characters in **** below, I\'ll convert the videos on the list to mp3\'s, and bring \'em to you.'
     },
@@ -10,6 +11,7 @@ const data = {
         color: 'red',
         rgb: 'rgb(219, 50, 54)',
         headerText: 'playlist',
+        requestType: 'playlist',
         instructionSampleUrl: 'https://www.youtube.com/playlist?list=**PLBROwRYZkGc1QPWxd0QiGULgA8_sy2DsG**',
         instruction: 'Old fashioned playlist. Go to your favorite youtube playlist, gimme the playlist ID looks like the characters in **** below, I\'ll convert the videos on the list to mp3\'s, and bring \'em to you.'
     },
@@ -17,6 +19,7 @@ const data = {
         color: 'yellow',
         rgb: 'rgb(244, 194, 13)',
         headerText: 'solo',
+        requestType: 'singleMusic',
         instructionSampleUrl: 'https://www.youtube.com/watch?v=**lkLViPVPUaw**',
         instruction: 'Just wanna download a single song? Go to your favorite youtube video, gimme the video ID looks like the characters in **** below, I\'ll convert the video to mp3, and bring it to you.'
     },
@@ -24,6 +27,7 @@ const data = {
         color: 'green',
         rgb: 'rgb(60, 186, 84)',
         headerText: 'video',
+        requestType: 'singleVideo',
         instructionSampleUrl: 'https://www.youtube.com/watch?v=**lkLViPVPUaw**',
         instruction: 'Just wanna download a single video? Go to your favorite youtube video, gimme the video ID looks like the characters in **** below, I\'ll give you the video.'
     },

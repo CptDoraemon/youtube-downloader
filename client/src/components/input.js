@@ -1,59 +1,39 @@
 import React, { Component } from 'react';
 import './input.css';
+import { addMountAnimationToWrapper } from "../utilities/mounting-animations";
 
-class Input extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            input: '',
-            isPreloadAnimating: true
-        };
-        this.inputChangeHandler = this.inputChangeHandler.bind(this);
-        this.submitHandler = this.submitHandler.bind(this);
+function Input (props) {
+    const enhancedWrapperCSS = addMountAnimationToWrapper('app-form', props);
+    const buttonCSS = props.isSubmitDisabled ? 'app-form-submit app-form-submit-disabled' : 'app-form-submit';
+
+    let buttonContent = 'Uh-huh';
+    switch (props.buttonType) {
+        case 'submit':
+            buttonContent = 'Uh-huh';
+            break;
+        case 'loading':
+            buttonContent = 'HOLD ON';
+            break;
+        case 'error':
+            buttonContent = 'ERROR';
+            break;
+        case 'download':
+            buttonContent = 'Download?';
+            break;
+        default:
+            buttonContent = 'Uh-huh';
+            break;
     }
 
-    inputChangeHandler(e) {
-        this.setState({
-            input: e.target.value
-        })
-    }
-    submitHandler(e) {
-        e.preventDefault();
-        const videoId = this.state.input;
-
-
-        const result = [];
-        fetch('/getVideoInfo', {
-            method: 'POST',
-            headers: {
-                "Content-Type": "application/json",
-            },
-            credentials: "same-origin",
-            body: JSON.stringify({
-                videoId: videoId
-            })
-        })
-            .then(res => {
-                result.push(res.blob());
-                console.log(result)
-            })
-            .then(json => console.log(json));
-    }
-
-    componentDidMount() {
-        setTimeout(() => {
-            this.setState({isPreloadAnimating: false})
-        }, 100)
-    }
-    render() {
-        const wrapperCSS = this.state.isPreloadAnimating ? 'app-form fade-in' : 'app-form fade-in-backswing';
-        return (
-            <form className={ wrapperCSS }>
-                <input type='text' className='app-form-input' onChange={this.inputChangeHandler} value={this.state.input}/>
-                <input type='submit' value='Uh-huh' className='app-form-submit' onClick={this.submitHandler}/>
-            </form>
-        )
-    }
+    return (
+        <form className={ enhancedWrapperCSS }>
+            <input type='text' className='app-form-input' onChange={props.changeHandler} value={props.input}/>
+            <div className={buttonCSS} onClick={props.submitHandler}>
+                { buttonContent }
+            </div>
+            {/*<input type='submit' value='Uh-huh' className='app-form-submit' onClick={props.submitHandler} disabled={props.isSubmitDisabled}/>*/}
+        </form>
+    )
 }
 
 export { Input };

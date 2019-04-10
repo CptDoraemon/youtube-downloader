@@ -20,22 +20,3 @@
     width: 100%;
     height: calc(50% - 50px);
 }
-.fade-in {
-    transform: translateY(50px);
-    opacity: 0;
-    transition: 0.5s;
-}
-.fade-in-backswing {
-    transform: translateY(0px);
-    opacity: 1;
-    transition: 0.5s;
-}
-.stretch {
-    width: 0 !important;
-    opacity: 0;
-    transition: 0.5s;
-}
-.stretch-backswing {
-    opacity: 1;
-    transition: 0.5s;
-}

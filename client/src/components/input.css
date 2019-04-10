@@ -8,7 +8,7 @@
     justify-content: center;
 }
 .app-form-input {
-    width: 70%;
+    width: 60%;
     margin: 0 2.5% 0 5%;
     height: 100%;
     font-size: 24px;
@@ -21,7 +21,7 @@
     outline-width: 0;
 }
 .app-form-submit {
-    width: 20%;
+    width: 30%;
     height: 100%;
     border: 4px solid black;
     margin: 0 5% 0 2.5%;
@@ -32,6 +32,10 @@
     box-sizing: content-box;
     -moz-box-sizing: content-box;
     background-color: rgba(0, 0, 0, 0);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
 }
 .app-form-submit:focus {
     outline-width: 0;
@@ -41,7 +45,15 @@
     background-color: red;
     color: white;
 }
-
+.app-form-submit-disabled {
+    opacity: 0.5;
+    cursor: progress;
+}
+.app-form-submit-loader {
+    width: 50px;
+    height: 50px;
+    color: inherit;
+}
 @media only screen and (max-width: 800px) {
     .app-form {
         height: 25px;
