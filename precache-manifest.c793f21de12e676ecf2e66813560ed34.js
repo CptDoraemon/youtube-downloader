@@ -4,19 +4,19 @@ self.__precacheManifest = [
     "url": "/youtube-downloader/static/js/runtime~main.70d9d589.js"
   },
   {
-    "revision": "75accf3b7b7512435dcc",
-    "url": "/youtube-downloader/static/js/main.bf0e0eb2.chunk.js"
+    "revision": "caae19f8d816a625d2be",
+    "url": "/youtube-downloader/static/js/main.8948eb36.chunk.js"
   },
   {
     "revision": "e1df9e5dd97f9dc5b41a",
     "url": "/youtube-downloader/static/js/2.373ccd69.chunk.js"
   },
   {
-    "revision": "75accf3b7b7512435dcc",
-    "url": "/youtube-downloader/static/css/main.66f10227.chunk.css"
+    "revision": "caae19f8d816a625d2be",
+    "url": "/youtube-downloader/static/css/main.e96618ce.chunk.css"
   },
   {
-    "revision": "a99c933737db3be41fb5be70aa1d25b9",
+    "revision": "a73b3bb9470ee421f502e370025a477b",
     "url": "/youtube-downloader/index.html"
   }
 ];
