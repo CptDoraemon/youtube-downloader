@@ -12,11 +12,3 @@
     background-color: rgba(0, 0, 0, 0.8);
     transition: 0.5s;
 }
-.app-lower {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: calc(50% - 50px);
-}

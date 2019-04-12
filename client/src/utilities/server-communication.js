@@ -7,11 +7,16 @@ function withSubmissionMethods(WrappedComponent) {
             this.state = {
                 isSubmitDisabled: false,
                 buttonType: 'submit', // submit, loading, error, download
-                value: ''
+                value: '',
+                message: ''
             };
             this.submitHandler = this.submitHandler.bind(this);
             this.changeHandler = this.changeHandler.bind(this);
+            this.errorHandler = this.errorHandler.bind(this);
+            this.clearErrorMessage = this.clearErrorMessage.bind(this);
             this.requestType = this.props.requestType;
+            this.clearErrorMessageTimeout = null;
+            this.downloadID = '';
         }
         submitHandler(e) {
             e.preventDefault();
@@ -23,6 +28,22 @@ function withSubmissionMethods(WrappedComponent) {
                 this.requestDownload()
             }
         }
+        clearErrorMessage() {
+            this.setState({
+                isSubmitDisabled: false,
+                buttonType: 'submit',
+                message: ''
+            })
+        }
+        errorHandler(messageString) {
+            this.setState({
+                isSubmitDisabled: false,
+                buttonType: 'error',
+                message: messageString
+            });
+            this.clearErrorMessageTimeout = setTimeout(this.clearErrorMessage, 5000)
+        }
+
         sendID() {
             this.setState({
                 isSubmitDisabled: true,
@@ -32,24 +53,70 @@ function withSubmissionMethods(WrappedComponent) {
                 type: this.requestType,
                 value: this.state.value
             };
-            setTimeout(() => {
-                this.setState({
-                    isSubmitDisabled: false,
-                    buttonType: 'download'
-                })
-            }, 2000);
+
+            fetch('/sendid', {
+                method: 'POST',
+                mode: 'same-origin',
+                cache: 'default',
+                credentials: 'same-origin',
+                headers: {
+                    'content-type': 'application/json'
+                },
+                redirect: 'follow',
+                referrer: 'client',
+                body: JSON.stringify(data)
+            })
+                .then(res => res.json())
+                .then(json => {
+                    if (json.type === 'successful') {
+                        this.downloadID = json.downloadID;
+                        this.setState({
+                            isSubmitDisabled: false,
+                            buttonType: 'download'
+                        })
+                    } else if (json.type === 'failed') {
+                        this.errorHandler(json.message.toString())
+                    }
+                }).catch(e => {
+                    console.log(e);
+                    this.errorHandler('Oops, something unexpected happened, please try again later')
+            });
         }
         requestDownload() {
             this.setState({
                 isSubmitDisabled: true,
                 buttonType: 'loading'
             });
-            setTimeout(() => {
-                this.setState({
-                    isSubmitDisabled: false,
-                    buttonType: 'submit'
-                })
-            }, 2000);
+            const data = {
+                downloadID: this.downloadID
+            };
+
+            fetch('/requestdownload', {
+                method: 'POST',
+                mode: 'same-origin',
+                cache: 'default',
+                credentials: 'same-origin',
+                headers: {
+                    'content-type': 'application/json'
+                },
+                redirect: 'follow',
+                referrer: 'client',
+                body: JSON.stringify(data)
+            })
+                .then(res => res.json())
+                .then(json => {
+                    if (json.type === 'successful') {
+                        this.setState({
+                            isSubmitDisabled: false,
+                            buttonType: 'submit'
+                        })
+                    } else if (json.type === 'failed') {
+                        this.errorHandler(json.message.toString)
+                    }
+                }).catch(e => {
+                console.log(e);
+                this.errorHandler('Oops, something unexpected happened, please try again later')
+            });
         }
 
         changeHandler(e) {
@@ -57,13 +124,18 @@ function withSubmissionMethods(WrappedComponent) {
                 value: e.target.value
             })
         }
+        componentWillUnmount() {
+            clearTimeout(this.clearErrorMessageTimeout);
+            this.clearErrorMessageTimeout = null
+        }
         render() {
             const injectProps = {
                 submitHandler: this.submitHandler,
                 changeHandler: this.changeHandler,
                 isSubmitDisabled: this.state.isSubmitDisabled,
                 value: this.state.value,
-                buttonType: this.state.buttonType
+                buttonType: this.state.buttonType,
+                message: this.state.message
             };
             return <WrappedComponent {...this.props} {...injectProps} />
         }

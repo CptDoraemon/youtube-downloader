@@ -24,12 +24,13 @@ function mountAnimationBackbone(backswingClassNameString, classNameString) {
                 this.timeOut = setTimeout(this.startAnimation, delayInMS)
             }
             componentWillUnmount() {
+                clearTimeout(this.timeOut);
                 this.timeOut = null;
             }
             render() {
                 const mountingAnimationClassName = this.state.isStaringAnimation ? backswingClassNameString : classNameString;
                 return (
-                    <WrappedComponent {...this.props} mountingAnimationClassName={mountingAnimationClassName}/>
+                    <WrappedComponent {...this.props} mountingAnimationClassName={mountingAnimationClassName} />
                 )
             }
         }

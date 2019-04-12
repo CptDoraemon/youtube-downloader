@@ -28,7 +28,7 @@ class Arrow extends Component{
         };
 
         return (
-            <img src={arrow} alt='arrow' style={arrowOffset} ref={this.arrowRef} className={enhancedWrapperCSS}/>
+            <img src={arrow} alt='arrow' style={arrowOffset} ref={this.arrowRef} className={enhancedWrapperCSS} />
         )
     }
 }

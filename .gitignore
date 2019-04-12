@@ -33,6 +33,12 @@ yarn-error.log*
 downloads/*
 !downloads/placeholder.md
 !downloads/html
+!downloads/zip
+!downloads/temp
 downloads/html/*
 !downloads/html/placeholder.md
+downloads/temp/*
+!downloads/temp/placeholder.md
+downloads/zip/*
+!downloads/zip/placeholder.md
 .env

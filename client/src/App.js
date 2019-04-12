@@ -58,7 +58,6 @@ class App extends Component {
                              transitionBackSwing={this.transitionBackSwing}
                              dataForThisMode={this.data[this.state.mode]}/>
                 <WithSubmissionMethodsFadeInInput requestType={this.data[this.state.mode].requestType} />
-                <div className='app-lower'> </div>
             </React.Fragment>
         );
 
