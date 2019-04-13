@@ -37,7 +37,7 @@ function withSubmissionMethods(WrappedComponent) {
         }
         errorHandler(messageString) {
             this.setState({
-                isSubmitDisabled: false,
+                isSubmitDisabled: true,
                 buttonType: 'error',
                 message: messageString
             });

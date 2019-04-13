@@ -24,6 +24,7 @@ function Input (props) {
             buttonContent = 'Uh-huh';
             break;
     }
+    const errorTimer = props.buttonType === 'error' ? <div className='app-form-submit-error-timer-active'> </div> : <div className='app-form-submit-error-timer-inactive'> </div> ;
 
     return (
         <React.Fragment>
@@ -31,6 +32,7 @@ function Input (props) {
                 <input type='text' className='app-form-input' onChange={props.changeHandler} value={props.input}/>
                 <div className={buttonCSS} onClick={props.submitHandler}>
                     { buttonContent }
+                    { errorTimer }
                 </div>
             </form>
             <div className='app-form-message'> { props.message === undefined ? null : props.message }</div>

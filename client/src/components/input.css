@@ -37,6 +37,8 @@
     flex-direction: row;
     align-items: center;
     justify-content: center;
+    position: relative;
+    overflow: hidden;
 }
 .app-form-submit:focus {
     outline-width: 0;
@@ -50,12 +52,38 @@
     opacity: 0.5;
     cursor: progress;
 }
+.app-form-submit-disabled:hover {
+    border: 4px solid black !important;
+    background-color: white !important;
+    color: black !important;
+}
 .app-form-message {
     height: calc(50% - 25px - 100px);
     padding-top: 100px;
     width: 100%;
     text-align: center;
     font-weight: 700;
+}
+.app-form-submit-error-timer-inactive, .app-form-submit-error-timer-active {
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: rgba(255, 0, 0, 0.5);
+    z-index: -1;
+}
+.app-form-submit-error-timer-inactive {
+    width: 0;
+}
+.app-form-submit-error-timer-active {
+    width: 100%;
+    animation-name: error-timer;
+    animation-duration: 5s;
+    animation-timing-function: linear;
+}
+@keyframes error-timer {
+    0%   {width: 100%;}
+    100% {width: 0;}
 }
 @media only screen and (max-width: 800px) {
     .app-form {
@@ -80,5 +108,8 @@
         padding-top: 30px;
         font-weight: 500;
         font-size: 16px;
+    }
+    .app-form-submit-disabled:hover {
+        border: 2px solid black !important;
     }
 }
