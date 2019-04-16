@@ -2,12 +2,16 @@ const request = require('request-promise-native');
 const fsp = require('fs').promises;
 const DOMParser = require('xmldom').DOMParser;
 const parser = new DOMParser();
+const ytdl = require('ytdl-core');
+
 
 module.exports = {
-    parseMixList: parseMixList
+    parseMixList: parseMixList,
+    getVideoTitle: getVideoTitle
 };
 
 async function parseMixList(videoID, paths) {
+    // returns obj with title and url props
     try {
         const mixListLink = 'https://www.youtube.com/watch?v=' + videoID + '&list=RD' + videoID;
         const mixListHtml = await request(mixListLink);
@@ -24,7 +28,7 @@ async function parseMixList(videoID, paths) {
         const resultArray = [];
         for (let i=0; i<liArray.length; i++) {
             const li = liArray[i];
-            const title = li.getAttribute('data-video-title').replace(/\s|\//g, '-');
+            const title = escapeTitle(li.getAttribute('data-video-title'));
             const url = 'https://www.youtube.com/watch?v=' + li.getAttribute('data-video-id');
             resultArray.push({
                 title: title,
@@ -35,4 +39,25 @@ async function parseMixList(videoID, paths) {
     } catch (err) {
         throw err
     }
+}
+
+function getVideoTitle(videoID) {
+    // return title
+    return new Promise((resolve, reject) => {
+        const title = ytdl.getBasicInfo(videoID, (err, info) => {
+            if (err) {
+                console.log(err);
+                const error = new Error('invalidInput');
+                error.name = 'invalidInput';
+                throw error
+            } else {
+                const title = info.title === undefined ? null : info.title;
+                resolve(title)
+            }
+        })
+    })
+}
+
+function escapeTitle(rawTitle) {
+    return rawTitle.replace(/\s|\//g, '-');
 }

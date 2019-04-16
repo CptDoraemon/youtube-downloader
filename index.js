@@ -5,9 +5,11 @@ const fs = require('fs');
 const fsp = require('fs').promises;
 const path = require('path');
 const rimraf = require('rimraf');
-const parseMixList = require('./utilities/parse-mix-list').parseMixList;
+const parseMixList = require('./utilities/parse-info-from-id').parseMixList;
+const getVideoTitle = require('./utilities/parse-info-from-id').getVideoTitle;
 const downloadMp3 = require('./utilities/download-mp3').downloadMp3;
 const zipper = require('./utilities/zipper').zipper;
+const myError = require('./utilities/errors');
 require('dotenv').config();
 
 const port = process.env.PORT || 5000;
@@ -38,7 +40,7 @@ app.post('/sendid', bodyParser.json(), ensureDomain, (req, res) => {
             handlePlaylist(value);
             break;
         case 'singleMusic':
-            handleSingleMusic(value);
+            handleSingleMusic(paths, value, res);
             break;
         case 'singleVideo':
             handleSingleVideo(value);
@@ -74,18 +76,34 @@ function ensureDomain(req, res, next) {
         res.send();
     }
 }
-function readyForDownloadResponse(res, downloadID, size) {
+async function readyForDownloadResponse(res, batchID, zipPath) {
+    downloadIDs[batchID] = zipPath;
+    const zipStats = await fsp.stat(zipPath);
+    const zipSizeInMB = Math.round(zipStats.size / 1024 / 1024);
     res.json({
         type: 'successful',
-        downloadID: paths.batchID,
-        message: `Your file is ready, total size: ${size}MB. Proceed to download?`
+        downloadID: batchID,
+        message: `Your file is ready, total size: ${zipSizeInMB}MB. Proceed to download?`
     });
 }
-function wrongInputResponse(res) {
-    res.json({
-        type: 'failed',
-        message: 'The ID you entered doesn\'t look right'
-    })
+function errorResponse(res, err) {
+    console.log(err);
+    if (err.name === 'invalidInput') {
+        res.json({
+            type: 'failed',
+            message: 'The ID you entered doesn\'t look right'
+        })
+    } else if (err.name === 'unableToDownload') {
+        res.json({
+            type: 'failed',
+            message: 'Sorry we are unable to download the content you requested'
+        })
+    } else {
+        res.json({
+            type: 'failed',
+            message: 'Sorry our server is unavailable right now, please try again later'
+        })
+    }
 }
 async function handleMixList(paths, value, res) {
     try {
@@ -100,26 +118,41 @@ async function handleMixList(paths, value, res) {
         // path if download successful, null if download failed
         const mp3PathArrayFiltered = mp3PathArray.filter(mp3Path => mp3Path !== null);
         // zip mp3 files
-        const zipStatus = await zipper(mp3PathArrayFiltered, paths.zipPath);
+        await zipper(mp3PathArrayFiltered, paths.zipPath);
         // clean up temp folder
-        if (zipStatus){
-            rimraf(paths.tempFolder, (e) => {
-                if (e) throw e;
+        rimraf(paths.tempFolder, (e) => {
+                if (e) console.log(e);
                 console.log('temp cleared')
             });
-        }
         // update downloadID state
         // send response to client
-        downloadIDs[paths.batchID] = paths.zipPath;
-        const zipStats = await fsp.stat(paths.zipPath);
-        const zipSizeInMB = Math.round(zipStats.size / 1024 / 1024);
-        readyForDownloadResponse(res, paths.batchID, zipSizeInMB)
+        readyForDownloadResponse(res, paths.batchID, paths.zipPath);
 
     } catch (e) {
-        console.log(e);
-        if (e.name === 'invalidInput') {
-            wrongInputResponse(res)
-        }
+        errorResponse(res, e)
+    }
+}
+async function handleSingleMusic(paths, value, res) {
+    try {
+        // get title
+        let title = await getVideoTitle(value);
+        if (title === null) title = paths.batchID;
+        // download mp3
+        const mp3Path = await downloadMp3(value, title, paths);
+        if (mp3Path === null) throw myError.unableToDownload;
+        // zip
+        await zipper([mp3Path], paths.zipPath);
+        // clean up temp folder
+        rimraf(paths.tempFolder, (e) => {
+            if (e) console.log(e);
+            console.log('temp cleared')
+        });
+        // update downloadID state
+        // send response to client
+        readyForDownloadResponse(res, paths.batchID, paths.zipPath);
+
+    } catch (e) {
+        errorResponse(res, e)
     }
 }
 

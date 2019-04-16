@@ -1,5 +1,6 @@
 const archiver = require('archiver');
 const fs = require('fs');
+const myError = require('./errors');
 
 module.exports = {
     zipper: zipper
@@ -20,7 +21,8 @@ function zipper(pathArray, zipPath) {
 
         zipFile.on('finish', () => resolve(true));
         zipFile.on('error', (err) =>{
-            reject(err)
+            console.log(err);
+            throw myError.zipError
         })
     });
 }

@@ -22,7 +22,7 @@ function downloadMp3(url, title, paths) {
             .audioChannels(2)
             .format('mp3')
             .on('error', (err) => {
-                console.log(`${url} CANNOT be downloaded`);
+                console.log(`${url} CANNOT be downloaded ` + err);
                 resolve(null)
             })
             .on('end', () => {
