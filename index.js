@@ -2,15 +2,12 @@ const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
 const fs = require('fs');
+const fsp = require('fs').promises;
 const path = require('path');
-const https = require('https');
-const request = require('request');
-const DOMParser = require('xmldom').DOMParser;
-const parser = new DOMParser();
-const ytdl = require('ytdl-core');
-const ffmpeg = require('fluent-ffmpeg');
-const archiver = require('archiver');
-const rimraf = require("rimraf");
+const rimraf = require('rimraf');
+const parseMixList = require('./utilities/parse-mix-list').parseMixList;
+const downloadMp3 = require('./utilities/download-mp3').downloadMp3;
+const zipper = require('./utilities/zipper').zipper;
 require('dotenv').config();
 
 const port = process.env.PORT || 5000;
@@ -24,9 +21,18 @@ app.use(express.static(myPathJoin('/client/build')));
 app.post('/sendid', bodyParser.json(), ensureDomain, (req, res) => {
     const type = req.body.type;
     const value = req.body.value;
+    //
+    const batchID = type + '-' + value + '-' + (+Date.now()).toString(36);
+    const paths = {
+        batchID: batchID,
+        htmlPath: myPathJoin('/downloads/html/', value + '.html'),
+        tempFolder: myPathJoin('/downloads/temp/', batchID),
+        zipPath: myPathJoin('/downloads/zip/') + batchID + '.zip'
+    };
+    //
     switch (type) {
         case 'mixList':
-            handleMixList(type, value, res);
+            handleMixList(paths, value, res);
             break;
         case 'playlist':
             handlePlaylist(value);
@@ -68,111 +74,56 @@ function ensureDomain(req, res, next) {
         res.send();
     }
 }
-function invalidValueHandler(res) {
+function readyForDownloadResponse(res, downloadID, size) {
+    res.json({
+        type: 'successful',
+        downloadID: paths.batchID,
+        message: `Your file is ready, total size: ${size}MB. Proceed to download?`
+    });
+}
+function wrongInputResponse(res) {
     res.json({
         type: 'failed',
         message: 'The ID you entered doesn\'t look right'
     })
 }
-function handleMixList(type, videoID, resToClient) {
+async function handleMixList(paths, value, res) {
     try {
-        const mixListLink = 'https://www.youtube.com/watch?v=' + videoID + '&list=RD' + videoID;
-        const batchID = type + '-' + videoID + '-' + (+Date.now()).toString(36);
-        const mp3FolderPath = myPathJoin('/downloads/temp/', batchID);
-        const zipPath = myPathJoin('/downloads/zip/') + batchID + '.zip';
-
-        request(mixListLink, (err, res, body) => {
-            // save the html requested
-            const htmlPath = myPathJoin('/downloads/html/', videoID + '.html');
-            fs.appendFile(htmlPath, body, (err) => {
-                if (err) console.log(err)
+        // parse video ID's from mixlist, return path array
+        const videoPathNTitleArray = await parseMixList(value, paths);
+        // download mp3 from path array
+        const mp3PathArray = await Promise.all(
+            videoPathNTitleArray.map(async obj => {
+                return await downloadMp3(obj.url, obj.title, paths);
+            })
+        );
+        // path if download successful, null if download failed
+        const mp3PathArrayFiltered = mp3PathArray.filter(mp3Path => mp3Path !== null);
+        // zip mp3 files
+        const zipStatus = await zipper(mp3PathArrayFiltered, paths.zipPath);
+        // clean up temp folder
+        if (zipStatus){
+            rimraf(paths.tempFolder, (e) => {
+                if (e) throw e;
+                console.log('temp cleared')
             });
-            // parse urls to array
-            const document = parser.parseFromString(body, "text/html");
-            const ol = document.getElementById('playlist-autoscroll-list');
-            if (ol === null) {
-                invalidValueHandler(resToClient);
-                return
-            }
-            const liArray = ol.getElementsByTagName('li');
-            const downloadMp3PromiseArray = [];
-            for (let i=0; i<liArray.length; i++) {
-                const li = liArray[i];
-                const title = li.getAttribute('data-video-title').replace(/\s|\//g, '-');
-                const url = 'https://www.youtube.com/' + li.getAttribute('data-video-id');
-                downloadMp3PromiseArray.push(downloadMP3(url, title, mp3FolderPath));
-            }
+        }
+        // update downloadID state
+        // send response to client
+        downloadIDs[paths.batchID] = paths.zipPath;
+        const zipStats = await fsp.stat(paths.zipPath);
+        const zipSizeInMB = Math.round(zipStats.size / 1024 / 1024);
+        readyForDownloadResponse(res, paths.batchID, zipSizeInMB)
 
-            Promise.all(downloadMp3PromiseArray)
-                .then(pathArray => {
-                    // zip mp3's
-                    pathArray = pathArray.filter(mp3path => mp3path !== null);
-
-                    const zipFile = fs.createWriteStream(zipPath);
-                    const archive = archiver('zip', {
-                        zlib: { level: 9 }
-                    });
-                    archive.pipe(zipFile);
-                    pathArray.map(mp3path => {
-                        const fileName = mp3path.match(/([^\/]+)$/i)[0];
-                        archive.file(mp3path, {name: fileName})
-                    });
-                    archive.finalize();
-
-                    // remove temp/batchID folder
-                    zipFile.on('finish', () => {
-                        rimraf(mp3FolderPath, (e) => {
-                            if (e) console.log(e);
-                            console.log('temp removed')
-                        });
-                        // res to client
-                        fs.stat(zipPath, (err, stats) => {
-                            if (err) {
-                                console.log(err)
-                            } else {
-                                const zipSizeInMB = Math.round(stats.size / 1024 / 1024);
-                                resToClient.json({
-                                    type: 'successful',
-                                    downloadID: batchID,
-                                    message: `Your file is ready, total size: ${zipSizeInMB}MB. Proceed to download?`
-                                });
-                                // update global downloadIDs
-                                downloadIDs[batchID] = zipPath;
-                            }
-                        });
-                    });
-                })
-                .catch((e) => console.log(e));
-
-        })
     } catch (e) {
-        console.log(e)
+        console.log(e);
+        if (e.name === 'invalidInput') {
+            wrongInputResponse(res)
+        }
     }
-}
-function downloadMP3(url, title, folderPath) {
-    // successful download return path, otherwise return null
-    if (!fs.existsSync(folderPath)){
-        fs.mkdirSync(folderPath);
-    }
-    const mp3path = path.join(folderPath, '/' + title + '.mp3');
-    return new Promise((resolve, reject) => {
-        ffmpeg(ytdl(url))
-            .audioBitrate('128k')
-            .audioCodec('libmp3lame')
-            .audioChannels(2)
-            .format('mp3')
-            .on('error', function(err) {
-                console.log('An error occurred: ' + err.message);
-                resolve(null)
-            })
-            .on('end', function() {
-                console.log('Processing finished !');
-                resolve(mp3path)
-            })
-            .save(mp3path);
-    })
 }
 
 function myPathJoin() {
     return path.join(__dirname, ...arguments)
 }
+
