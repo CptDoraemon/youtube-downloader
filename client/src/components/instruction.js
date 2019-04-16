@@ -65,7 +65,7 @@ class Instruction extends Component {
 
         return (
             <div
-                className='app-upper-example'
+                className='instruction-url'
                 onMouseOver={this.handleMouseOver}
                 onMouseLeave={this.handleMouseLeave}>{urlArray[0]}
                 <span className='instruction-highlight' style={{color: data.rgb}} ref={this.highLightRef}>

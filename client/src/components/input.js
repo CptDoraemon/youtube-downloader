@@ -29,7 +29,7 @@ function Input (props) {
     return (
         <React.Fragment>
             <form className={ enhancedWrapperCSS }>
-                <input type='text' className='app-form-input' onChange={props.changeHandler} value={props.input}/>
+                <input type='text' className='app-form-input' onChange={props.changeHandler} value={props.value}/>
                 <div className={buttonCSS} onClick={props.submitHandler}>
                     { buttonContent }
                     { errorTimer }

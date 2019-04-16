@@ -14,8 +14,14 @@ function withSubmissionMethods(WrappedComponent) {
             this.changeHandler = this.changeHandler.bind(this);
             this.errorHandler = this.errorHandler.bind(this);
             this.clearErrorMessage = this.clearErrorMessage.bind(this);
+            this.resetAfterDownload = this.resetAfterDownload.bind(this);
+            this.fetcher = this.fetcher.bind(this);
+            this.sendIDResHandler = this.sendIDResHandler.bind(this);
+            this.sendID = this.sendID.bind(this);
+            this.requestDownload = this.requestDownload.bind(this);
             this.requestType = this.props.requestType;
             this.clearErrorMessageTimeout = null;
+            this.downloadSuccessfulTimeout = null;
             this.downloadID = '';
         }
         submitHandler(e) {
@@ -35,6 +41,14 @@ function withSubmissionMethods(WrappedComponent) {
                 message: ''
             })
         }
+        resetAfterDownload() {
+            this.setState({
+                isSubmitDisabled: false,
+                buttonType: 'submit',
+                message: '',
+                value: ''
+            })
+        }
         errorHandler(messageString) {
             this.setState({
                 isSubmitDisabled: true,
@@ -43,7 +57,38 @@ function withSubmissionMethods(WrappedComponent) {
             });
             this.clearErrorMessageTimeout = setTimeout(this.clearErrorMessage, 5000)
         }
-
+        fetcher(url, data, resHandler) {
+             fetch(url, {
+                method: 'POST',
+                mode: 'same-origin',
+                cache: 'default',
+                credentials: 'same-origin',
+                headers: {
+                    'content-type': 'application/json'
+                },
+                redirect: 'follow',
+                referrer: 'client',
+                body: JSON.stringify(data)
+            })
+                .then(res => res.json())
+                .then(resHandler)
+                .catch(e => {
+                    console.log(e);
+                    this.errorHandler('Oops, something unexpected happened, please try again later')
+                })
+        }
+        sendIDResHandler(json) {
+            if (json.type === 'successful') {
+                this.downloadID = json.downloadID;
+                this.setState({
+                    isSubmitDisabled: false,
+                    buttonType: 'download',
+                    message: json.message
+                })
+            } else if (json.type === 'failed') {
+                this.errorHandler(json.message.toString())
+            }
+        }
         sendID() {
             this.setState({
                 isSubmitDisabled: true,
@@ -54,70 +99,20 @@ function withSubmissionMethods(WrappedComponent) {
                 value: this.state.value
             };
 
-            fetch('/sendid', {
-                method: 'POST',
-                mode: 'same-origin',
-                cache: 'default',
-                credentials: 'same-origin',
-                headers: {
-                    'content-type': 'application/json'
-                },
-                redirect: 'follow',
-                referrer: 'client',
-                body: JSON.stringify(data)
-            })
-                .then(res => res.json())
-                .then(json => {
-                    if (json.type === 'successful') {
-                        this.downloadID = json.downloadID;
-                        this.setState({
-                            isSubmitDisabled: false,
-                            buttonType: 'download'
-                        })
-                    } else if (json.type === 'failed') {
-                        this.errorHandler(json.message.toString())
-                    }
-                }).catch(e => {
-                    console.log(e);
-                    this.errorHandler('Oops, something unexpected happened, please try again later')
-            });
+            this.fetcher('/sendid', data, this.sendIDResHandler);
         }
         requestDownload() {
             this.setState({
                 isSubmitDisabled: true,
-                buttonType: 'loading'
+                buttonType: 'loading',
+                message: 'Your download will start shortly'
             });
-            const data = {
-                downloadID: this.downloadID
-            };
-
-            fetch('/requestdownload', {
-                method: 'POST',
-                mode: 'same-origin',
-                cache: 'default',
-                credentials: 'same-origin',
-                headers: {
-                    'content-type': 'application/json'
-                },
-                redirect: 'follow',
-                referrer: 'client',
-                body: JSON.stringify(data)
-            })
-                .then(res => res.json())
-                .then(json => {
-                    if (json.type === 'successful') {
-                        this.setState({
-                            isSubmitDisabled: false,
-                            buttonType: 'submit'
-                        })
-                    } else if (json.type === 'failed') {
-                        this.errorHandler(json.message.toString)
-                    }
-                }).catch(e => {
-                console.log(e);
-                this.errorHandler('Oops, something unexpected happened, please try again later')
-            });
-        }
+            const ID = this.downloadID;
+            const url = encodeURI('/download?id=' + ID);
+            window.open(url);
+            // window.open('http://localhost:5000' + url);
+            this.downloadSuccessfulTimeout = setTimeout(this.resetAfterDownload, 5000)
+        };
 
         changeHandler(e) {
             this.setState({
@@ -126,7 +121,9 @@ function withSubmissionMethods(WrappedComponent) {
         }
         componentWillUnmount() {
             clearTimeout(this.clearErrorMessageTimeout);
-            this.clearErrorMessageTimeout = null
+            this.clearErrorMessageTimeout = null;
+            clearTimeout(this.downloadSuccessfulTimeout);
+            this.downloadSuccessfulTimeout = null
         }
         render() {
             const injectProps = {
