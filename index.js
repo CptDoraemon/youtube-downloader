@@ -126,7 +126,7 @@ async function handleMixList(paths, value, res) {
             });
         // update downloadID state
         // send response to client
-        readyForDownloadResponse(res, paths.batchID, paths.zipPath);
+        await readyForDownloadResponse(res, paths.batchID, paths.zipPath);
 
     } catch (e) {
         errorResponse(res, e)
@@ -149,7 +149,7 @@ async function handleSingleMusic(paths, value, res) {
         });
         // update downloadID state
         // send response to client
-        readyForDownloadResponse(res, paths.batchID, paths.zipPath);
+        await readyForDownloadResponse(res, paths.batchID, paths.zipPath);
 
     } catch (e) {
         errorResponse(res, e)
