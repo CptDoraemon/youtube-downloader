@@ -1,8 +1,11 @@
 const fs = require('fs');
 const fsp = require('fs').promises;
 const path = require('path');
+const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
 const ffmpeg = require('fluent-ffmpeg');
 const ytdl = require('ytdl-core');
+
+ffmpeg.setFfmpegPath(ffmpegPath);
 
 module.exports = {
     downloadMp3: downloadMp3
@@ -17,7 +20,7 @@ function downloadMp3(url, title, paths) {
     const mp3path = path.join(paths.tempFolder, '/' + title + '.mp3');
     return new Promise((resolve, reject) => {
         ffmpeg(ytdl(url))
-            .audioBitrate('128k')
+            .audioBitrate('256k')
             .audioCodec('libmp3lame')
             .audioChannels(2)
             .format('mp3')
