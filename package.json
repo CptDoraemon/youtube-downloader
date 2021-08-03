@@ -19,7 +19,7 @@
     "request": "^2.88.0",
     "request-promise-native": "^1.0.7",
     "rimraf": "^2.6.3",
-    "xmldom": "^0.1.27",
+    "xmldom": "^0.6.0",
     "ytdl-core": "^3.1.0"
   },
   "devDependencies": {
